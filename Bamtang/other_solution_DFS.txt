@@ -1,0 +1,245 @@
+#include <iostream>
+#include <stack>
+#include <queue>
+
+#define MAX 101
+
+using namespace std;
+
+struct Cell
+{
+	bool visited;
+	bool top_wall;
+	bool down_wall;
+	bool left_wall;
+	bool right_wall;
+	char display;
+};
+
+void initialize(Cell[][MAX], const int);
+void redraw(Cell[][MAX], const int);
+
+void generateMazeDFS(Cell[][MAX], const int);
+void findPathBFS(Cell[][MAX], const int);
+
+void createMaze2D(const int);
+
+int main() {
+
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	const int n = 11;
+
+	createMaze2D(n);
+
+	return 0;
+}
+
+void initialize(Cell board[][MAX], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			board[i][j].display = '*';
+			board[i][j].visited = false;
+			board[i][j].top_wall = true;
+			board[i][j].down_wall = true;
+			board[i][j].left_wall = true;
+			board[i][j].right_wall = true;
+		}
+	}
+
+	for (int i = 1; i < n - 1; i++)
+	{
+		for (int j = 1; j < n - 1; j++)
+		{
+			board[1][j].top_wall = false;
+			board[n - 2][j].down_wall = false;
+			board[i][1].left_wall = false;
+			board[i][n - 2].right_wall = false;
+		}
+	}
+}
+
+void redraw(Cell board[][MAX], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << "\n";
+		for (int j = 0; j < n; j++)
+			cout << board[i][j].display;
+	}
+	cout << "\n";
+}
+
+void generateMazeDFS(Cell board[][MAX], int n)
+{
+
+	srand((unsigned)time(NULL));
+	int direction = 0;
+
+	int randomY = ((2 * rand()) + 1) % (n - 1);  //Generate a random odd number between 1 and n
+	int randomX = ((2 * rand()) + 1) % (n - 1);
+
+	int visitedCells = 1;
+	int totalCells = ((n - 1) / 2) * ((n - 1) / 2);
+
+	stack<pair<int, int>> _stack;
+
+	board[randomY][randomX].display = ' ';
+	board[randomY][randomX].visited = true;
+
+	while (visitedCells < totalCells)
+	{
+		if (((board[randomY - 2][randomX].visited == false) && (board[randomY][randomX].top_wall == true && board[randomY - 2][randomX].down_wall == true)) ||
+			((board[randomY + 2][randomX].visited == false) && (board[randomY][randomX].down_wall == true && board[randomY + 2][randomX].top_wall == true)) ||
+			((board[randomY][randomX - 2].visited == false) && (board[randomY][randomX].left_wall == true && board[randomY][randomX - 2].right_wall == true)) ||
+			((board[randomY][randomX + 2].visited == false) && (board[randomY][randomX].right_wall == true && board[randomY][randomX + 2].left_wall == true)))
+		{
+			direction = (rand() % 4) + 1;
+
+			//UP
+			if ((direction == 1) && (randomY > 1))
+			{
+				if (board[randomY - 2][randomX].visited == false)
+				{
+					board[randomY - 1][randomX].display = ' ';
+					board[randomY - 1][randomX].visited = true;
+					board[randomY][randomX].top_wall = false;
+
+					_stack.push({ randomX,randomY });
+
+					randomY -= 2;
+					board[randomY][randomX].visited = true;
+					board[randomY][randomX].display = ' ';
+					board[randomY][randomX].down_wall = false;
+					visitedCells++;
+				}
+				else
+					continue;
+			}
+
+			//DOWN
+			else if ((direction == 2) && (randomY < n - 2))
+			{
+				if (board[randomY + 2][randomX].visited == false)
+				{
+					board[randomY + 1][randomX].display = ' ';
+					board[randomY + 1][randomX].visited = true;
+					board[randomY][randomX].down_wall = false;
+
+					_stack.push({ randomX,randomY });
+
+					randomY += 2;
+					board[randomY][randomX].visited = true;
+					board[randomY][randomX].display = ' ';
+					board[randomY][randomX].top_wall = false;
+					visitedCells++;
+				}
+				else
+					continue;
+			}
+
+			//LEFT
+			else if ((direction == 3) && (randomX > 1))
+			{
+				if (board[randomY][randomX - 2].visited == false)
+				{
+					board[randomY][randomX - 1].display = ' ';
+					board[randomY][randomX - 1].visited = true;
+					board[randomY][randomX].left_wall = false;
+
+					_stack.push({ randomX,randomY });
+
+					randomX -= 2;
+					board[randomY][randomX].visited = true;
+					board[randomY][randomX].display = ' ';
+					board[randomY][randomX].right_wall = false;
+					visitedCells++;
+				}
+				else
+					continue;
+			}
+
+			//RIGHT
+			else if ((direction == 4) && (randomX < n - 2))
+			{
+				if (board[randomY][randomX + 2].visited == false)
+				{
+					board[randomY][randomX + 1].display = ' ';
+					board[randomY][randomX + 1].visited = true;
+					board[randomY][randomX].right_wall = false;
+
+					_stack.push({ randomX,randomY });
+
+					randomX += 2;
+					board[randomY][randomX].visited = true;
+					board[randomY][randomX].display = ' ';
+					board[randomY][randomX].left_wall = false;
+					visitedCells++;
+				}
+				else
+					continue;
+			}
+		}
+		else {
+			pair<int, int> current = _stack.top();
+			randomX = current.second;
+			randomY = current.first;
+			_stack.pop();
+		}
+	}
+}
+
+void findPathBFS(Cell board[][MAX], const int n)
+{
+	queue<pair<int, int>> _queue;
+	pair<int, int> current;
+
+	_queue.push({ 1,1 });
+	board[1][1].display = 'A';
+
+	bool** visitado = new bool* [n];
+	for (int i = 0; i < n; i++) visitado[i] = new bool[n];
+
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+			visitado[i][j] = false;
+	}
+
+	const int dx[4] = { 0, 0, 1, -1 };
+	const int dy[4] = { 1, -1, 0, 0 };
+
+	while (!_queue.empty())
+	{
+		current = _queue.front();
+		_queue.pop();
+
+		visitado[current.first][current.second] = true;
+		for (int i = 0; i < 4; ++i)
+		{
+			int nx = dx[i] + current.first;
+			int ny = dy[i] + current.second;
+
+			if (nx >= 0 && nx < n && ny >= 0 && ny < n && visitado[nx][ny] == false && board[nx][ny].display != '*')
+			{
+				_queue.push({ nx, ny });
+			}
+		}
+	}
+
+	board[current.first][current.second].display = 'B';
+}
+
+void createMaze2D(const int n)
+{
+	Cell board[MAX][MAX];
+
+	initialize(board, n);
+	generateMazeDFS(board, n);
+	findPathBFS(board, n);
+	redraw(board, n);
+}

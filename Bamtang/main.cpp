@@ -23,7 +23,7 @@ int main()
 
 	srand((unsigned)time(NULL));
 
-	int n = 31;
+	int n = 11;
 	createMaze2D(n);
 
 	return 0;
@@ -73,7 +73,7 @@ void generateMaze(char* board, int n, int x, int y)
 
 	for (int i = 0; i < 4; ++i)
 	{
-		int random = rand() & 3;
+		int random = rand() % 4;
 		int temp = direction[random];
 		direction[random] = direction[i];
 		direction[i] = temp;

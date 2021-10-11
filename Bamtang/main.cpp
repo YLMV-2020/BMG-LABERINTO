@@ -23,7 +23,7 @@ int main()
 
 	srand((unsigned)time(NULL));
 
-	int n = 11;
+	int n = 13;
 	createMaze2D(n);
 
 	return 0;
@@ -109,8 +109,8 @@ void findPathBFS(char* board, int n)
 	_queue.push({ 1,1 });
 	board[index(1, 1, n)] = 'A';
 
-	bool* visitado = new bool[(n * n)]();
-	for (int i = 0; i < n * n; i++) visitado[i] = false;
+	bool* visited = new bool[(n * n)]();
+	for (int i = 0; i < n * n; i++) visited[i] = false;
 	
 	const int dx[4] = { 0, 0, 1, -1 };
 	const int dy[4] = { 1, -1, 0, 0 };
@@ -120,13 +120,13 @@ void findPathBFS(char* board, int n)
 		current = _queue.front();
 		_queue.pop();
 
-		visitado[index(current.first, current.second, n)] = true;
+		visited[index(current.first, current.second, n)] = true;
 		for (int i = 0; i < 4; ++i)
 		{
 			int nx = dx[i] + current.first;
 			int ny = dy[i] + current.second;
 
-			if (nx >= 0 && nx < n && ny >= 0 && ny < n && visitado[index(nx, ny, n)] == false && board[index(nx, ny, n)] != '*')
+			if (nx >= 0 && nx < n && ny >= 0 && ny < n && visited[index(nx, ny, n)] == false && board[index(nx, ny, n)] != '*')
 			{
 				_queue.push({ nx, ny });
 			}

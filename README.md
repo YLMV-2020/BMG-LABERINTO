@@ -27,12 +27,3 @@ n = 11 (* = muro, A = inicio, B = fin)
 Implementar la función: **createMaze2D( n )**
 
 No generar cualquier laberinto, recuerda que se pide un laberinto de un solo camino posible entre A y B.
-
-## Construido con 🛠️
-
-* C++ - Lenguaje de programación
-* [Visual Studio 2019](https://visualstudio.microsoft.com/es/downloads/) - IDE
-
-## Autor ✒️
-
-* **Yordy Leonidas** - *Implementación* - [YLMV-2020](https://github.com/YLMV-2020)
